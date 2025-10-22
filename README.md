@@ -1,81 +1,72 @@
 # AgentRedChain
 
-**An Experimental Framework for Security Testing of Multi-Agent AI Systems**
+**Status: Early development. Core hypothesis unvalidated.**
 
-## Overview
+An experimental framework for testing whether sparse evaluation can reduce the cost of security testing multi-agent AI systems.
 
-AgentRedChain is a research framework designed to evaluate the security vulnerabilities of multi-agent artificial intelligence systems. As organizations increasingly deploy chains of AI agents working together to accomplish complex tasks, understanding how these systems respond to adversarial inputs becomes critical for ensuring their safe and reliable operation.
+## What this is
 
-This framework introduces sparse evaluation strategies that aim to reduce the computational costs of comprehensive security testing while maintaining assessment quality through statistical sampling methods. By implementing targeted attack injection and vulnerability modeling techniques, AgentRedChain provides researchers with tools to systematically identify weaknesses in multi-agent AI deployments.
+AgentRedChain is a tool I'm building to explore whether statistical sampling methods from Item Response Theory can identify vulnerabilities in multi-agent systems without exhaustive testing. The framework injects adversarial prompts at specific points in agent chains and uses Rasch modeling to attempt predicting behavior of untested combinations.
 
-**Important Notice**: This is experimental research software. Performance claims regarding cost reduction and accuracy preservation are theoretical and have not been empirically validated through comprehensive testing.
+**Important: This is experimental software under active development. The sparse evaluation approach has not been validated. Performance claims are theoretical targets, not measured results.**
 
-## Core Capabilities
+## Core components
 
-### Security Testing Infrastructure
-The framework enables systematic red-teaming of multi-agent systems through controlled attack injection at specific points in the agent chain. It supports three fundamental agent architectures: linear pipelines for sequential processing, star topologies for consensus-based decision making, and hierarchical structures for multi-level review systems.
+### Agent architectures
+Three topologies are supported. Linear pipelines for sequential processing. Star topologies for consensus-based decisions. Hierarchical structures for multi-level review.
 
-### Attack Simulation Library
-AgentRedChain implements ten distinct attack scenarios across five critical security categories: goal hijacking, data exfiltration, privilege escalation, jailbreak propagation, and subtle information poisoning. Each attack is designed to test different aspects of agent resilience and inter-agent communication security.
+### Attack library
+Ten attack scenarios across five categories. Goal hijacking redirects objectives. Data exfiltration tests information leakage. Privilege escalation probes unauthorized access. Jailbreak propagation tracks adversarial spread. Information poisoning introduces compounding corruptions.
 
-### Vulnerability Assessment Metrics
-The framework employs Total Variation Distance-Mutual Information (TVD-MI) scoring to quantify the semantic divergence between clean and compromised agent outputs. This embedding-based approach provides interpretable metrics for measuring how attacks propagate through multi-agent systems and impact final outputs.
+### Evaluation metrics
+TVD-MI scoring quantifies semantic divergence between clean and compromised outputs. This embedding-based approach measures attack propagation through the system.
 
-### Sparse Evaluation Methodology
-To address the computational expense of testing all possible attack-agent combinations, AgentRedChain implements sparse sampling strategies informed by Item Response Theory from educational assessment. The framework includes random, logarithmic, and pattern-informed sampling approaches that aim to identify high-value test cases while reducing overall evaluation costs.
+### Sparse sampling
+The framework implements random, logarithmic, and pattern-informed sampling strategies informed by Item Response Theory. The hypothesis is that not all attack-agent combinations provide equal information. This has not been tested in practice.
 
-## Technical Architecture
+## Technical details
 
-### Supported Models
-The framework currently integrates with leading AI providers through their official APIs:
-- **GPT-5** (OpenAI): 256K token context window
-- **Claude Sonnet 4.5** (Anthropic): 200K token context window
-- **Grok 4** (xAI): 32K token context window
+### Supported models
+Integration with three AI providers through their APIs:
+- GPT-5 (OpenAI): 256K token context
+- Claude Sonnet 4.5 (Anthropic): 200K token context
+- Grok 4 (xAI): 32K token context
 
-### Implementation Components
-- **Agent Chain Builder**: Constructs multi-agent systems with configurable topologies
-- **Attack Generator**: Creates adversarial prompts targeted at specific vulnerabilities
-- **Evaluation Engine**: Measures attack impact using semantic similarity metrics
-- **Cost Tracker**: Monitors API usage and provides real-time budget management
-- **Rasch Model**: Experimental vulnerability modeling using alternating least squares
+### Implementation
+- Agent Chain Builder: Constructs multi-agent systems with configurable topologies
+- Attack Generator: Creates adversarial prompts from templates
+- Evaluation Engine: Measures impact through semantic similarity
+- Cost Tracker: Monitors API usage for budget management
+- Rasch Model: Experimental vulnerability modeling (untested)
 
-## Installation and Setup
+## Installation
 
-### Prerequisites
+Prerequisites:
 - Python 3.9 or higher
 - API keys for at least one supported model provider
-- Approximately 2GB of disk space for model embeddings
+- Approximately 2GB disk space for embeddings
 
-### Installation Steps
-
-1. Clone the repository and navigate to the project directory:
 ```bash
-git clone https://github.com/yourusername/agentredchain.git
-cd agentredchain
-```
-
-2. Install required dependencies:
-```bash
+git clone https://github.com/armolo23/Red-Link.git
+cd Red-Link
 pip install -r requirements.txt
 ```
 
-3. Configure your API credentials by creating a `.env` file:
+Create a `.env` file:
 ```
-OPENAI_API_KEY=your-gpt5-key
-ANTHROPIC_API_KEY=your-claude-key
-XAI_API_KEY=your-grok-key
+OPENAI_API_KEY=your-key
+ANTHROPIC_API_KEY=your-key
+XAI_API_KEY=your-key
 ```
 
-## Usage Example
-
-The following example demonstrates a basic security evaluation of a multi-agent research pipeline:
+## Usage example
 
 ```python
 from src.agents.chain_builder import AgentChain
 from src.attacks.injections import InjectionGenerator
 from src.evaluation.tvd_mi_scorer import TVDMIScorer
 
-# Initialize a multi-agent chain
+# Initialize chain
 chain = AgentChain(
     topology='linear',
     model_type='claude-sonnet-4.5',
@@ -84,11 +75,11 @@ chain = AgentChain(
 )
 chain.build_research_pipeline()
 
-# Generate attack scenarios
+# Generate attacks
 injector = InjectionGenerator()
 attacks = injector.generate_all_attacks()
 
-# Execute evaluation with attack injection
+# Execute with and without attack
 baseline = chain.execute("Analyze AI ethics in healthcare")
 compromised = chain.execute(
     "Analyze AI ethics in healthcare",
@@ -102,45 +93,47 @@ impact = scorer.compute_tvd_mi(baseline['final_output'], compromised['final_outp
 print(f"Attack impact score: {impact:.4f}")
 ```
 
-## Research Context
+## Research questions
 
-This framework emerged from the recognition that as multi-agent AI systems become more prevalent in production environments, traditional security testing approaches that evaluate every possible vulnerability become prohibitively expensive. AgentRedChain explores whether statistical sampling techniques can maintain evaluation quality while significantly reducing the number of tests required.
+I'm particularly interested in how attacks propagate through agent networks, how you test for adversarial robustness when the system itself is distributed, and how you assign liability when failures emerge from interactions rather than individual components. These are empirical questions that need systematic testing infrastructure.
 
-The sparse evaluation approach draws inspiration from educational assessment, where Item Response Theory has successfully modeled student abilities and question difficulties from incomplete test data. By adapting these techniques to security testing, the framework attempts to predict unobserved vulnerabilities from a limited set of executed tests.
+The sparse evaluation hypothesis is that Item Response Theory techniques can transfer from educational assessment to adversarial security testing. Whether this actually works remains an open question requiring rigorous empirical validation.
 
-## Limitations and Disclaimers
+## What this is not
 
-### Experimental Nature
-AgentRedChain is a research prototype intended for academic investigation and controlled security testing. The framework's core hypothesis—that sparse sampling can maintain evaluation quality while reducing costs—has not been validated through empirical studies with real-world data.
+This is not validated research. The framework's core claim that sparse sampling maintains evaluation quality while reducing costs is theoretical. No empirical studies have verified effectiveness against real-world data.
 
-### Performance Claims
-Any performance metrics mentioned in the codebase or documentation represent theoretical targets based on statistical sampling theory, not measured results from production deployments. Users should conduct their own validation before relying on the framework's assessments.
+The approach requires advance knowledge of which behaviors to test. Novel vulnerabilities from agent interactions will be missed. Only predetermined injection points are evaluated. Dynamic adversarial adaptation is unexplored.
 
-### Security Considerations
-This tool is designed for authorized security testing only. Users are responsible for obtaining appropriate permissions before testing any systems they do not own. The attack scenarios included are intended for defensive research and should not be used for malicious purposes.
+Performance metrics in the codebase are aspirational targets, not measured results. Statistical models may not generalize across architectures or attack types. IRT assumptions may not hold in adversarial contexts.
 
-## Project Structure
+## Validation needed
+
+Moving from experimental tool to validated approach requires empirical studies comparing sparse evaluation against exhaustive testing across diverse architectures. Both cost reduction and vulnerability detection accuracy must be measured. Whether IRT assumptions hold in security contexts is an open question.
+
+Traditional red-teaming enumerates comprehensively. Sparse evaluation accepts incomplete testing for reduced cost, but only if statistical models accurately predict untested scenarios. This needs testing.
+
+## Project structure
 
 ```
 agentredchain/
 ├── src/
-│   ├── agents/           # Multi-agent chain construction
-│   ├── attacks/          # Attack scenario generation
-│   ├── evaluation/       # Vulnerability scoring and analysis
-│   └── utils/            # API management and cost tracking
-├── notebooks/            # Demonstration notebooks
-├── tests/               # Unit and integration tests
-└── DISCLAIMER.md        # Important usage warnings
+│   ├── agents/       # Multi-agent chain construction
+│   ├── attacks/      # Attack scenario generation
+│   ├── evaluation/   # Vulnerability scoring
+│   └── utils/        # API management and cost tracking
+├── notebooks/        # Demonstration notebooks
+└── tests/           # Unit and integration tests
 ```
 
-## Contributing
+## Security notice
 
-As an experimental research project, AgentRedChain welcomes contributions from the security and AI research communities. Please review the contribution guidelines before submitting pull requests. Areas of particular interest include empirical validation studies, alternative sampling strategies, and extensions to the attack library.
+This tool is for authorized security testing only. Do not use for malicious purposes. Do not deploy for production assessment without rigorous validation. Users are responsible for obtaining appropriate permissions before testing systems they do not own.
 
 ## License
 
-This project is released under the MIT License. See the LICENSE file for complete details.
+MIT License. See LICENSE file for details.
 
 ## Contact
 
-For questions about the research methodology or potential collaborations, please open an issue on the GitHub repository.
+For questions about the methodology or potential collaboration, open an issue on the repository.
